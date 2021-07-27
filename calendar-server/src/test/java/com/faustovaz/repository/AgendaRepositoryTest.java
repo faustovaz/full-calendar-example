@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -40,7 +41,7 @@ class AgendaRepositoryTest {
 		LocalDateTime start = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
 		LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
 		
-		List<Agenda> agendamentos = repository.findByAgendamentoBetween(start, end);
+		List<Agenda> agendamentos = repository.findByAgendamentoBetween(start, end, Sort.by(Sort.Direction.ASC, "agendamento"));
 		assertThat(agendamentos).isNotEmpty();
 		assertThat(agendamentos).hasSize(1);
 	}
@@ -65,7 +66,7 @@ class AgendaRepositoryTest {
 			new Agenda("Fausto", LocalDateTime.now(), "Tests12")
 		).forEach((a) -> repository.save(a));
 		
-		var agendamentos = repository.findByAgendamentoBetween(start, end);
+		var agendamentos = repository.findByAgendamentoBetween(start, end, Sort.by(Sort.Direction.ASC, "agendamento"));
 		assertThat(agendamentos).hasSize(3);		
 		assertThat(agendamentos).allMatch((a) -> a.getAgendamento().getDayOfMonth() == 25);
 		assertThat(agendamentos).allMatch((a) -> a.getAgendamento().getMonth().equals(Month.JUNE));

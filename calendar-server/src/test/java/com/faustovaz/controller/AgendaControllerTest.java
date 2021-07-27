@@ -3,6 +3,7 @@ package com.faustovaz.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.isA;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -132,7 +133,16 @@ class AgendaControllerTest {
 			.andExpect(jsonPath("$").isNotEmpty());
 	}
 	
+	@Test
+	void shouldDeleteAScheduledDateById() throws Exception {
+		saveDataForTests();
+		List<Map<String, Object>> agendamentos = jdbcTemplate.queryForList("select * from agenda");
+		int totalBeforeDelete = agendamentos.size();
+		mvc
+			.perform(delete("/agenda/1"))
+			.andExpect(status().isOk());
+		agendamentos = jdbcTemplate.queryForList("select * from agenda");
+		assertThat(agendamentos.size()).isEqualTo(totalBeforeDelete - 1);
+	}
 	
-	
-
 }

@@ -159,7 +159,8 @@ class CalendarManager {
                 </button>
                 <button class="btn btn-outline-danger"
                   data-action="removeSchedule"
-                  data-schedule="${d.id}">
+                  data-schedule="${d.id}"
+                  data-schedule-date="${dateToString(new Date(d.agendamento))}">
                   <i class="fa fa-remove"></i>
                 </button>
               </td>
@@ -186,10 +187,15 @@ class CalendarManager {
 
   _enableRemoveEventListener() {
     const btns = document.querySelectorAll('[data-action="removeSchedule"]');
-    btns.forEach( btn => btn.addEventListener('click', evt => {
-      console.log(evt.target.getAttribute("data-schedule"));
+    btns.forEach( btn => btn.addEventListener('click', e => {
+      // if clicked on the I element of the button
+      const element = e.target.tagName === 'I' ? e.target.parentNode : e.target;
+      const id = element.getAttribute('data-schedule');
+      const date = element.getAttribute('data-schedule-date');
+      this.removeSchedule(id, date);
     }));
   }
+
 
   _showTableIfDataExists(data) {
     const table = document.querySelector("#tbScheduledDates");
@@ -201,8 +207,14 @@ class CalendarManager {
   }
 
 
-  removeSchedule(evt) {
-    console.log(evt);
+  removeSchedule(scheduledId, scheduledDate) {
+    console.log(scheduledId, scheduledDate);
+    this.service.deleteScheduledDate(scheduledId, () => {
+      this.updateScheduleTableFor(new Date(`${scheduledDate}T00:00:00`));
+      this.loadScheduledDates();
+    }, (e) => {
+      this.showMessage("#modalErrorMsg", e.message);
+    });
   }
 }
 
